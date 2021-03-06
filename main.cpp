@@ -354,7 +354,7 @@ void pre()
              "  □                    □ |[Ctrl][Z]rot ccw|\n"
              "  □                    □ |[←][→]move L/R|\n"
              "  □                    □ |[↓]NL soft drop|\n"
-             "  □                    □ |[Sp]NL hard drop|\n"
+             "  □                    □ |[Sp]L hard drop |\n"
              "  □                    □ |                |\n"
              "  □                    □ |按任意键开始游戏|\n"
              "  □                    □  ================\n"
@@ -795,6 +795,7 @@ void gaming()
                 else if(key == 32)
                 {
                     curBlock = preBlock;
+                    break;
                 }
             }
             if(GetKeyState(VK_CONTROL) < 0)
