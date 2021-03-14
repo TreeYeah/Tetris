@@ -30,13 +30,13 @@ struct currentBlock
 short  ground[10][21];
 int score,line,burn,level = 6;
 short nextBlocks[7],nextBlockI;
-string wideNumbers[10] = {"ï¼","ï¼‘","ï¼’","ï¼“","ï¼”","ï¼•","ï¼–","ï¼—","ï¼˜","ï¼™"};
+string wideNumbers[10] = {"£°","£±","£²","£³","£´","£µ","£¶","£·","£¸","£¹"};
 short speed[20] = {800,716,633,550,466,383,300,216,133,100,84,83,83,67,67,66,50,50,50,33};
 short linesForLevels[20] = {0,0,0,0,0,0,5,15,15,20,20,20,20,20,20,20,25,30,35};
 //short linesForLevels[20] = {10,20,30,40,50,60,70,80,90,100,100,100,100,100,100,100,110,120,130};
 
 //
-short wallKickData[4/*å››ä¸ªåˆå§‹æ–¹å‘*/][2/*ä¸¤ä¸ªæ—‹è½¬æ–¹å‘*/][4/*å››ä¸ªTest*/][2/* xï¼Œyåæ ‡ */] =
+short wallKickData[4/*ËÄ¸ö³õÊ¼·½Ïò*/][2/*Á½¸öÐý×ª·½Ïò*/][4/*ËÄ¸öTest*/][2/* x£¬y×ø±ê */] =
         {
                 {   //0
                         {{-1,0},{-1,-1},{0,2},{-1,2}},  //R
@@ -56,7 +56,7 @@ short wallKickData[4/*å››ä¸ªåˆå§‹æ–¹å‘*/][2/*ä¸¤ä¸ªæ—‹è½¬æ–¹å‘*/][4/*å››ä¸ªTe
                 }
         };
 
-short wallKickDataOfI[4/*å››ä¸ªåˆå§‹æ–¹å‘*/][2/*ä¸¤ä¸ªæ—‹è½¬æ–¹å‘*/][4/*å››ä¸ªTest*/][2/* xï¼Œyåæ ‡ */] =
+short wallKickDataOfI[4/*ËÄ¸ö³õÊ¼·½Ïò*/][2/*Á½¸öÐý×ª·½Ïò*/][4/*ËÄ¸öTest*/][2/* x£¬y×ø±ê */] =
         {
                 {   //0
                         {{-2,0},{1,0},{-2,1},{1,-2}},  //R
@@ -82,18 +82,18 @@ int getRand(int mini,int maxi)
     return rand() % (maxi - mini + 1) + mini;
 }
 
-void go(float x,float y) //å…‰æ ‡ç§»åŠ¨å‡½æ•°ï¼Œxè¡¨ç¤ºæ¨ªåæ ‡ï¼Œyè¡¨ç¤ºçºµåæ ‡ã€‚
+void go(float x,float y) //¹â±êÒÆ¶¯º¯Êý£¬x±íÊ¾ºá×ø±ê£¬y±íÊ¾×Ý×ø±ê¡£
 {
-    COORD coord;         //ä½¿ç”¨å¤´æ–‡ä»¶è‡ªå¸¦çš„åæ ‡ç»“æž„
-    coord.X = x * 2 + 2;            //è¿™é‡Œå°†intç±»åž‹å€¼ä¼ ç»™short,ä¸è¿‡ç¨‹åºä¸­æ¶‰åŠçš„åæ ‡å€¼å‡ä¸ä¼šè¶…è¿‡shortèŒƒå›´
+    COORD coord;         //Ê¹ÓÃÍ·ÎÄ¼þ×Ô´øµÄ×ø±ê½á¹¹
+    coord.X = x * 2 + 2;            //ÕâÀï½«intÀàÐÍÖµ´«¸øshort,²»¹ý³ÌÐòÖÐÉæ¼°µÄ×ø±êÖµ¾ù²»»á³¬¹ýshort·¶Î§
     coord.Y = y + 1;
-    HANDLE a = GetStdHandle(STD_OUTPUT_HANDLE);  //èŽ·å¾—æ ‡å‡†è¾“å‡ºå¥æŸ„
-    SetConsoleCursorPosition(a,coord);         //ä»¥æ ‡å‡†è¾“å‡ºçš„å¥æŸ„ä¸ºå‚æ•°è®¾ç½®æŽ§åˆ¶å°å…‰æ ‡åæ ‡
+    HANDLE a = GetStdHandle(STD_OUTPUT_HANDLE);  //»ñµÃ±ê×¼Êä³ö¾ä±ú
+    SetConsoleCursorPosition(a,coord);         //ÒÔ±ê×¼Êä³öµÄ¾ä±úÎª²ÎÊýÉèÖÃ¿ØÖÆÌ¨¹â±ê×ø±ê
 }
-void color(int a)//è®¾å®šé¢œè‰²çš„å‡½æ•°
+void color(int a)//Éè¶¨ÑÕÉ«µÄº¯Êý
 {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),a);
-}//é»‘ æ·±è“ æ·±ç»¿ æµ…è“  çº¢  æ·±ç´«  åœŸé»„ æµ…ç° æ·±ç° äº®è“ äº®ç»¿  æœ€æ·¡çš„è“ æ¡ƒçº¢ æµ…ç´«  ç±³é»„  ç™½
+}//ºÚ ÉîÀ¶ ÉîÂÌ Ç³À¶  ºì  Éî×Ï  ÍÁ»Æ Ç³»Ò Éî»Ò ÁÁÀ¶ ÁÁÂÌ  ×îµ­µÄÀ¶ ÌÒºì Ç³×Ï  Ã×»Æ  °×
 
 
 void pre()
@@ -106,9 +106,9 @@ void pre()
     system("cls");
     color(15);
     CONSOLE_CURSOR_INFO cursor_info={1,0};
-    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor_info);//éšè—å…‰æ ‡
+    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor_info);//Òþ²Ø¹â±ê
 
-    block[0].color = {197,208};
+    block[0].color = {179,48};
     block[0].matrix[0] =
             {
                     0,0,0,0,
@@ -139,7 +139,7 @@ void pre()
             };  //I
 
 
-    block[1].color = {196,64};
+    block[1].color = {230,96};
     block[1].matrix[0] =
             {
                     0,1,1,0,
@@ -169,7 +169,7 @@ void pre()
                     0,0,0,0
             };  //O
 
-    block[2].color = {186,160};
+    block[2].color = {162,32};
     block[2].matrix[0] =
             {
                     0,0,1,1,
@@ -199,7 +199,7 @@ void pre()
                     0,0,0,0
             };  //S
 
-    block[3].color = {162,32};
+    block[3].color = {196,64};
     block[3].matrix[0] =
             {
                     0,1,1,0,
@@ -229,7 +229,7 @@ void pre()
                     0,0,0,0
             };  //Z
 
-    block[4].color = {57,144};
+    block[4].color = {120,128};
     block[4].matrix[0] =
             {
                     0,0,0,1,
@@ -260,7 +260,7 @@ void pre()
             };  //L
 
 
-    block[5].color = {145,16};
+    block[5].color = {49,16};
 
     block[5].matrix[0] =
             {
@@ -291,7 +291,7 @@ void pre()
                     0,0,0,0
             };  //J
 
-    block[6].color = {230,96};
+    block[6].color = {213,80};
     block[6].matrix[0] =
             {
                     0,0,1,0,
@@ -323,42 +323,42 @@ void pre()
 
 
     unsigned seed = time(0);
-    srand(seed);//è®¾ç½®éšæœºæ•°ç§å­
+    srand(seed);//ÉèÖÃËæ»úÊýÖÖ×Ó
 
-    /*ä»¥ä¸‹ä¸ºç•Œé¢æ‰“å°*/
+    /*ÒÔÏÂÎª½çÃæ´òÓ¡*/
 
     go(0.5,0);
-    printf(" â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â” \n");
+    printf(" ©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥ \n");
     go(0.5,1);
-    printf("â”ƒ    ï¼³ï¼£ï¼¯ï¼²ï¼¥   â”ƒ\n");
+    printf("©§    £Ó£Ã£Ï£Ò£Å   ©§\n");
     go(0.5,2);
-    printf("â”ƒ ã€€ã€€ã€€ã€€ã€€      â”ƒ\n");
+    printf("©§ ¡¡¡¡¡¡¡¡¡¡      ©§\n");
     go(0.5,3);
-    printf(" â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â” \n");
+    printf(" ©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥ \n");
 
     go(0,4);
-    printf(  "â–¡â–¡â–¡â–¡â–¡â–¡â–¡â–¡â–¡â–¡â–¡â–¡     ==NEXT==\n"
-             "  â–¡                    â–¡    |        |\n"
-             "  â–¡                    â–¡    |        |\n"
-             "  â–¡                    â–¡     ========\n"
-             "  â–¡                    â–¡\n"
-             "  â–¡                    â–¡\n"
-             "  â–¡                    â–¡  LINE\n"
-             "  â–¡                    â–¡\n"
-             "  â–¡                    â–¡  BURN\n"
-             "  â–¡                    â–¡\n"
-             "  â–¡                    â–¡  LEVEL\n"
-             "  â–¡                    â–¡\n"
-             "  â–¡                    â–¡  ================\n"
-             "  â–¡                    â–¡ |[â†‘][X]rotate cw|\n"
-             "  â–¡                    â–¡ |[Ctrl][Z]rot ccw|\n"
-             "  â–¡                    â–¡ |[â†][â†’]move L/R|\n"
-             "  â–¡                    â–¡ |[â†“]NL soft drop|\n"
-             "  â–¡                    â–¡ |[Sp]L hard drop |\n"
-             "  â–¡                    â–¡ |                |\n"
-             "  â–¡                    â–¡ |æŒ‰ä»»æ„é”®å¼€å§‹æ¸¸æˆ|\n"
-             "  â–¡                    â–¡  ================\n"
-             "  â–¡â–¡â–¡â–¡â–¡â–¡â–¡â–¡â–¡â–¡â–¡â–¡");
+    printf(  "¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ     ==NEXT==\n"
+             "  ¡õ                    ¡õ    |        |\n"
+             "  ¡õ                    ¡õ    |        |\n"
+             "  ¡õ                    ¡õ     ========\n"
+             "  ¡õ                    ¡õ\n"
+             "  ¡õ                    ¡õ\n"
+             "  ¡õ                    ¡õ  LINE\n"
+             "  ¡õ                    ¡õ\n"
+             "  ¡õ                    ¡õ  BURN\n"
+             "  ¡õ                    ¡õ\n"
+             "  ¡õ                    ¡õ  LEVEL\n"
+             "  ¡õ                    ¡õ\n"
+             "  ¡õ                    ¡õ  ================\n"
+             "  ¡õ                    ¡õ |[¡ü][X]rotate cw|\n"
+             "  ¡õ                    ¡õ |[Ctrl][Z]rot ccw|\n"
+             "  ¡õ                    ¡õ |[¡û][¡ú]move L/R|\n"
+             "  ¡õ                    ¡õ |[¡ý]NL soft drop|\n"
+             "  ¡õ                    ¡õ |[Sp]L hard drop |\n"
+             "  ¡õ                    ¡õ |                |\n"
+             "  ¡õ                    ¡õ |°´ÈÎÒâ¼ü¿ªÊ¼ÓÎÏ·|\n"
+             "  ¡õ                    ¡õ  ================\n"
+             "  ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ");
 }
 
 void clearImfBar()
@@ -423,7 +423,7 @@ void printBlock(int mode,currentBlock block1)
                 go(j + block1.x + 1,5 + i + block1.y);
                 if(mode)
                 {
-                    printf("â– ");
+                    printf("¡ö");
                 }
                 else
                 {
@@ -495,7 +495,7 @@ void printTheNextBlock()
             if(block[nextBlocks[nextBlockI]].matrix[0].data[i][j])
             {
                 go((nextBlocks[nextBlockI] == 1 ? 15 : 14.5) + j - (kj / 2.0),5 + i - ki);
-                printf("â– ");
+                printf("¡ö");
             }
     color(15);
 }
@@ -618,16 +618,16 @@ void lineCheck(int y)
     switch (linesN)
     {
         case 1:
-            score += 40;
+            score += 40 * (level + 1);
             break;
         case 2:
-            score += 100;
+            score += 100 * (level + 1);
             break;
         case 3:
-            score += 300;
+            score += 300 * (level + 1);
             break;
         case 4:
-            score += 1200;
+            score += 1200 * (level + 1);
             break;
     }
 
@@ -639,7 +639,7 @@ void lineCheck(int y)
             if(ground[j][i])
             {
                 color(block[ground[j][i] - 1].color.color[0]);
-                printf("â– ");
+                printf("¡ö");
             }
             else
             {
@@ -659,14 +659,14 @@ void lineCheck(int y)
     printLevel();
 
     go(14.5,20);
-    printf("æ¸¸æˆè¿›è¡Œä¸­");
+    printf("ÓÎÏ·½øÐÐÖÐ");
 }
 
 int main();
 
 void gaming()
 {
-    SetConsoleTitle("ä¿„ç½—æ–¯æ–¹å—ï¼ˆ Esc/F1/Enteræš‚åœæ¸¸æˆ ï¼‰");
+    SetConsoleTitle("¶íÂÞË¹·½¿é£¨ Esc/F1/EnterÔÝÍ£ÓÎÏ· £©");
     while(!kbhit())
         Sleep(100);
     int i = getch();
@@ -674,7 +674,7 @@ void gaming()
     clearImfBar();
 
     go(14.5,20);
-    printf("æ¸¸æˆè¿›è¡Œä¸­");
+    printf("ÓÎÏ·½øÐÐÖÐ");
 
     nextBlockI = 0;
     getRandomBlocks(true);
@@ -760,10 +760,10 @@ void gaming()
                     tryToSpin(lockDelay,false);
                 else if(key == 27 || key == 0 || key == 13 || key == 59)
                 {
-                    SetConsoleTitle("æš‚åœä¸­â€¦â€¦");
+                    SetConsoleTitle("ÔÝÍ£ÖÐ¡­¡­");
 
                     go(14.5,20);
-                    printf("æš‚åœä¸­â€¦â€¦");
+                    printf("ÔÝÍ£ÖÐ¡­¡­");
 
                     printBlock(1,curBlock);
                     while(kbhit())
@@ -771,24 +771,24 @@ void gaming()
                     while(!getch())
                         Sleep(100);
 
-                    SetConsoleTitle("äºŒ â€¦â€¦");
+                    SetConsoleTitle("¶þ ¡­¡­");
                     go(14.5,20);
-                    printf("    äºŒ    ");
+                    printf("    ¶þ    ");
                     Sleep(1000);
 
-                    SetConsoleTitle("ä¸€ â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦");
+                    SetConsoleTitle("Ò» ¡­¡­¡­¡­¡­¡­¡­¡­");
                     go(14.5,20);
-                    printf("    ä¸€    ");
+                    printf("    Ò»    ");
                     Sleep(1000);
 
-                    SetConsoleTitle("ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ æ¸¸æˆç»§ç»­ ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“");
+                    SetConsoleTitle("¡þ¡þ¡þ¡þ¡þ¡þ¡þ¡þ¡þ¡þ ÓÎÏ·¼ÌÐø ¡þ¡þ¡þ¡þ¡þ¡þ¡þ¡þ¡þ¡þ");
                     go(14.5,20);
-                    printf("æ¸¸æˆç»§ç»­ï¼");
+                    printf("ÓÎÏ·¼ÌÐø£¡");
                     Sleep(1000);
 
                     go(14.5,20);
-                    printf("æ¸¸æˆè¿›è¡Œä¸­");
-                    SetConsoleTitle("ä¿„ç½—æ–¯æ–¹å—ï¼ˆ Esc/F1/Enteræš‚åœæ¸¸æˆ ï¼‰");
+                    printf("ÓÎÏ·½øÐÐÖÐ");
+                    SetConsoleTitle("¶íÂÞË¹·½¿é£¨ Esc/F1/EnterÔÝÍ£ÓÎÏ· £©");
 
                     printBlock(0,curBlock);
                 }
@@ -816,19 +816,19 @@ void gaming()
             break;
         lineCheck(curBlock.y);
     }
-    SetConsoleTitle("æ¸¸æˆç»“æŸ");
+    SetConsoleTitle("ÓÎÏ·½áÊø,EscÍË³ö");
     go(14.5,20);
     printf("          ");
     go(15,17);
-    printf("æ¸¸æˆç»“æŸ");
+    printf("ÓÎÏ·½áÊø");
     go(13.5,19);
-    printf("å¾—åˆ†ï¼š%d",score);
+    printf("µÃ·Ö£º%d",score);
 
     ifstream infile("Highest.dat",ios::in);
     if(!infile)
     {
         go(13,19);
-        printf("è¯»å–æœ€é«˜è®°å½•å¤±è´¥");
+        printf("¶ÁÈ¡×î¸ß¼ÇÂ¼Ê§°Ü");
     }
     int highest = -1;
     infile >> highest;
@@ -840,24 +840,31 @@ void gaming()
         if(!outfile)
         {
             go(13,20);
-            cerr << "ä¿å­˜æœ€é«˜è®°å½•å¤±è´¥" << endl;
+            cerr << "±£´æ×î¸ß¼ÇÂ¼Ê§°Ü" << endl;
         }
         outfile << score;
         highest = score;
     }
 
     go(13.5,21);
-    printf("æœ€é«˜ï¼š%d",highest);
+    printf("×î¸ß£º%d",highest);
     if(highest == score)
-        printf("(å½“å‰)");
+        printf("(µ±Ç°)");
 
     go(13,23);
-    printf("Enterè¿›å…¥æ–°æ¸¸æˆ");
+    printf("Enter½øÈëÐÂÓÎÏ·");
+    
     int key = getch();
-    if(key == 13)
+    while(key != 27 && key != 0 && key != 59)
     {
-        main();
-    }
+        if(key == 13)
+        {
+        	main();
+        	break;
+		} 
+		key = getch();  
+	}
+	
 }
 
 int main()
@@ -869,9 +876,6 @@ int main()
     printLevel();
 
     gaming();
-
-    go(0,26);
-    system("pause");
 
     return 0;
 }
