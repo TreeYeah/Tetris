@@ -20,3 +20,6 @@ C++控制台版俄罗斯方块 2.0.2
 .exe文件同目录下必须有一个名为Highest.dat的文件才可以保存最高纪录
 
 Tetris.zip压缩包中包含可执行文件与Highest.dat
+
+![GitHub Logo](/pic-display.png)
+（我最高纪录是145320）
