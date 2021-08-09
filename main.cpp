@@ -1,12 +1,15 @@
-#include <bits/stdc++.h>
+#include <iostream>
+#include <fstream>
+#include <vector>
 #include <windows.h>
+#include <ctime>
 #include <conio.h>
 
 using namespace std;
 
 struct ColorData
 {
-    short color[2]; //[0]å‚¨å­˜æ–¹å—æœ¬ä½“é¢œè‰²ï¼Œ[1]è¡¨ç¤ºé¢„è§ˆæ–¹å—ï¼ˆGhost pieceï¼‰çš„é¢œè‰²
+    short color[2];
 };
 
 struct MatrixData
@@ -14,29 +17,29 @@ struct MatrixData
     bool data[4][4];
 };
 
-struct Block        //7ç§æ–¹å—çš„æ•°æ®
+struct Block
 {
-    ColorData color;        //æ–¹å—é¢œè‰²
-    MatrixData matrix[4];   //æ–¹å—å½¢çŠ¶
+    ColorData color;
+    MatrixData matrix[4];
 }block[7];
 
-struct currentBlock //å½“å‰æ–¹å—
+struct currentBlock
 {
-    int x,y;    //åæ ‡
-    short type; //ç§ç±»
-    int dir;    //æ–¹å‘
+    int x,y;
+    short type;
+    int dir;
 }curBlock,preBlock;
 
-short  ground[10][21];  //åœ°å›¾
-int score,line,burn,level = 6;  //åˆ†æ•°ï¼›æ¶ˆè¡Œæ•°ï¼›burnï¼ˆTetris ä»¥å¤–çš„æ¶ˆè¡Œæ•°ï¼‰ï¼›é€Ÿåº¦çº§åˆ«ï¼ˆä»å…­çº§å¼€å§‹ï¼‰
-short nextBlocks[7],nextBlockI; //åˆ†åˆ«æ˜¯ 7-bag éšæœºç³»ç»Ÿä¸­æœ¬åŒ…çš„ä¸ƒä¸ªæ–¹å— å’Œå¯¹äºå½“å‰ä¸‹è½ä¸­æ–¹å—ç´§æ¥ç€çš„ä¸€ä¸ªæ–¹å—
-string wideNumbers[10] = {"ï¼","ï¼‘","ï¼’","ï¼“","ï¼”","ï¼•","ï¼–","ï¼—","ï¼˜","ï¼™"}; //å…¨è§’æ•°å­—
-short speed[20] = {800,716,633,550,466,383,300,216,133,100,84,83,83,67,67,66,50,50,50,33};  //æ¯ä¸ªçº§åˆ«æ–¹å—ä¸‹è½ä¸€æ ¼çš„æ—¶é—´ï¼ˆmsï¼‰
-short linesForLevels[20] = {0,0,0,0,0,0,5,15,15,20,20,20,20,20,20,20,25,30,35}; //ï¼ˆé€Ÿåº¦ï¼‰æ¯å‡ä¸€çº§çš„è¡Œæ•°
-//short linesForLevels[20] = {10,20,30,40,50,60,70,80,90,100,100,100,100,100,100,100,110,120,130};  //è¿™æ˜¯åŸæ¸¸æˆçš„æ•°æ®ï¼Œç”±äºæ¯çº§è€—è´¹æ—¶é—´å¤ªé•¿ï¼Œå®é™…ä½¿ç”¨çš„æ•°æ®å°†è¡Œæ•°é™ä½
+short  ground[10][21];
+int score,line,burn,level = 6;
+short nextBlocks[7],nextBlockI;
+string wideNumbers[10] = {"£°","£±","£²","£³","£´","£µ","£¶","£·","£¸","£¹"};
+short speed[20] = {800,716,633,550,466,383,300,216,133,100,84,83,83,67,67,66,50,50,50,33};
+short linesForLevels[20] = {0,0,0,0,0,0,5,15,15,20,20,20,20,20,20,20,25,30,35};
+//short linesForLevels[20] = {10,20,30,40,50,60,70,80,90,100,100,100,100,100,100,100,110,120,130};
 
-
-short wallKickData[4/*å››ä¸ªåˆå§‹æ–¹å‘*/][2/*ä¸¤ä¸ªæ—‹è½¬æ–¹å‘*/][4/*å››ä¸ªTest*/][2/* xï¼Œyåæ ‡ */] =
+//
+short wallKickData[4/*ËÄ¸ö³õÊ¼·½Ïò*/][2/*Á½¸öĞı×ª·½Ïò*/][4/*ËÄ¸öTest*/][2/* x£¬y×ø±ê */] =
         {
                 {   //0
                         {{-1,0},{-1,-1},{0,2},{-1,2}},  //R
@@ -54,9 +57,9 @@ short wallKickData[4/*å››ä¸ªåˆå§‹æ–¹å‘*/][2/*ä¸¤ä¸ªæ—‹è½¬æ–¹å‘*/][4/*å››ä¸ªTe
                         {{-1,0},{-1,1},{0,-2},{-1,-2}},  //0
                         {{-1,0},{-1,1},{0,-2},{-1,-2}}   //2
                 }
-        };  //SRSè¸¢å¢™ï¼ˆwallkickï¼‰J, L, S, T, Z æ•°æ®
+        };
 
-short wallKickDataOfI[4/*å››ä¸ªåˆå§‹æ–¹å‘*/][2/*ä¸¤ä¸ªæ—‹è½¬æ–¹å‘*/][4/*å››ä¸ªTest*/][2/* xï¼Œyåæ ‡ */] =
+short wallKickDataOfI[4/*ËÄ¸ö³õÊ¼·½Ïò*/][2/*Á½¸öĞı×ª·½Ïò*/][4/*ËÄ¸öTest*/][2/* x£¬y×ø±ê */] =
         {
                 {   //0
                         {{-2,0},{1,0},{-2,1},{1,-2}},  //R
@@ -74,42 +77,41 @@ short wallKickDataOfI[4/*å››ä¸ªåˆå§‹æ–¹å‘*/][2/*ä¸¤ä¸ªæ—‹è½¬æ–¹å‘*/][4/*å››ä¸
                         {{1,0},{-2,0},{1,2},{-2,-1}},  //0
                         {{-2,0},{1,0},{-2,1},{1,-2}}   //2
                 }
-        };  //SRSè¸¢å¢™ï¼ˆwallkickï¼‰I æ•°æ®
+        };
 
 
-int getRand(int mini,int maxi)  //è·å–éšæœºæ•°çš„å‡½æ•°
+int getRand(int mini,int maxi)
 {
     return rand() % (maxi - mini + 1) + mini;
 }
 
-void go(float x,float y)    //å…‰æ ‡ç§»åŠ¨å‡½æ•°ï¼Œxè¡¨ç¤ºæ¨ªåæ ‡ï¼Œyè¡¨ç¤ºçºµåæ ‡
+void go(float x,float y) //¹â±êÒÆ¶¯º¯Êı£¬x±íÊ¾ºá×ø±ê£¬y±íÊ¾×İ×ø±ê¡£
 {
-    COORD coord;            //ä½¿ç”¨å¤´æ–‡ä»¶è‡ªå¸¦çš„åæ ‡ç»“æ„
-    coord.X = x * 2 + 2;    //ä¼ å…¥çš„xåæ ‡æ˜¯ä»¥ä¸€æ–¹æ ¼ä¸ºå•ä½çš„ï¼Œè€Œå®é™…ä¸Šä¸€ä¸ªå•ä½æ˜¯ä¸€ä¸ªå­—ç¬¦ï¼Œæ•…éœ€ä¹˜2ï¼›å¦å¤–åŠ 2åœ¨å·¦ä¾§é€‚å½“ç•™ç™½
+    COORD coord;         //Ê¹ÓÃÍ·ÎÄ¼ş×Ô´øµÄ×ø±ê½á¹¹
+    coord.X = x * 2 + 2;            //ÕâÀï½«intÀàĞÍÖµ´«¸øshort,²»¹ı³ÌĞòÖĞÉæ¼°µÄ×ø±êÖµ¾ù²»»á³¬¹ıshort·¶Î§
     coord.Y = y + 1;
-    HANDLE a = GetStdHandle(STD_OUTPUT_HANDLE);     //è·å¾—æ ‡å‡†è¾“å‡ºå¥æŸ„
-    SetConsoleCursorPosition(a,coord);              //ä»¥æ ‡å‡†è¾“å‡ºçš„å¥æŸ„ä¸ºå‚æ•°è®¾ç½®æ§åˆ¶å°å…‰æ ‡åæ ‡
+    HANDLE a = GetStdHandle(STD_OUTPUT_HANDLE);  //»ñµÃ±ê×¼Êä³ö¾ä±ú
+    SetConsoleCursorPosition(a,coord);         //ÒÔ±ê×¼Êä³öµÄ¾ä±úÎª²ÎÊıÉèÖÃ¿ØÖÆÌ¨¹â±ê×ø±ê
 }
-void color(int a)   //è®¾å®šé¢œè‰²çš„å‡½æ•°
+void color(int a)//Éè¶¨ÑÕÉ«µÄº¯Êı
 {
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE),a);
-}//é»‘ æ·±è“ æ·±ç»¿ æµ…è“  çº¢  æ·±ç´«  åœŸé»„ æµ…ç° æ·±ç° äº®è“ äº®ç»¿  æœ€æ·¡çš„è“ æ¡ƒçº¢ æµ…ç´«  ç±³é»„  ç™½
+}//ºÚ ÉîÀ¶ ÉîÂÌ Ç³À¶  ºì  Éî×Ï  ÍÁ»Æ Ç³»Ò Éî»Ò ÁÁÀ¶ ÁÁÂÌ  ×îµ­µÄÀ¶ ÌÒºì Ç³×Ï  Ã×»Æ  °×
 
 
-void pre()  //åˆå§‹åŒ–
+void pre()
 {
     score = line = burn = 0;
     level = 6;
     memset(ground,0,sizeof(ground));
 
-    system("mode con cols=48 lines=28");    //è®¾ç½®çª—å£å¤§å°
+    system("mode con cols=48 lines=28");
     system("cls");
     color(15);
-
     CONSOLE_CURSOR_INFO cursor_info={1,0};
-    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor_info);    //éšè—å…‰æ ‡
+    SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &cursor_info);//Òş²Ø¹â±ê
 
-    block[0].color = {179,48};  //7ç§æ–¹å—çš„åˆå§‹åŒ–
+    block[0].color = {179,48};
     block[0].matrix[0] =
             {
                     0,0,0,0,
@@ -324,45 +326,45 @@ void pre()  //åˆå§‹åŒ–
 
 
     unsigned seed = time(0);
-    srand(seed);    //è®¾ç½®éšæœºæ•°ç§å­
+    srand(seed);//ÉèÖÃËæ»úÊıÖÖ×Ó
 
-    /*ä»¥ä¸‹ä¸ºç•Œé¢æ‰“å°*/
+    /*ÒÔÏÂÎª½çÃæ´òÓ¡*/
 
     go(0.5,0);
-    printf(" â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â” \n");
+    printf(" ©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥ \n");
     go(0.5,1);
-    printf("â”ƒ    ï¼³ï¼£ï¼¯ï¼²ï¼¥   â”ƒ\n");
+    printf("©§    £Ó£Ã£Ï£Ò£Å   ©§\n");
     go(0.5,2);
-    printf("â”ƒ ã€€ã€€ã€€ã€€ã€€      â”ƒ\n");
+    printf("©§ ¡¡¡¡¡¡¡¡¡¡      ©§\n");
     go(0.5,3);
-    printf(" â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”â” \n");
+    printf(" ©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥ \n");
 
     go(0,4);
-    printf(  "â–¡â–¡â–¡â–¡â–¡â–¡â–¡â–¡â–¡â–¡â–¡â–¡     ==NEXT==\n"
-             "  â–¡                    â–¡    |        |\n"
-             "  â–¡                    â–¡    |        |\n"
-             "  â–¡                    â–¡     ========\n"
-             "  â–¡                    â–¡\n"
-             "  â–¡                    â–¡\n"
-             "  â–¡                    â–¡  LINE\n"
-             "  â–¡                    â–¡\n"
-             "  â–¡                    â–¡  BURN\n"
-             "  â–¡                    â–¡\n"
-             "  â–¡                    â–¡  LEVEL\n"
-             "  â–¡                    â–¡\n"
-             "  â–¡                    â–¡  ================\n"
-             "  â–¡                    â–¡ |[â†‘][X]rotate cw|\n"
-             "  â–¡                    â–¡ |[Ctrl][Z]rot ccw|\n"
-             "  â–¡                    â–¡ |[â†][â†’]move L/R|\n"
-             "  â–¡                    â–¡ |[â†“]NL soft drop|\n"
-             "  â–¡                    â–¡ |[Sp]L hard drop |\n"
-             "  â–¡                    â–¡ |                |\n"
-             "  â–¡                    â–¡ |æŒ‰ä»»æ„é”®å¼€å§‹æ¸¸æˆ|\n"
-             "  â–¡                    â–¡  ================\n"
-             "  â–¡â–¡â–¡â–¡â–¡â–¡â–¡â–¡â–¡â–¡â–¡â–¡");
+    printf(  "¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ     ==NEXT==\n"
+             "  ¡õ                    ¡õ    |        |\n"
+             "  ¡õ                    ¡õ    |        |\n"
+             "  ¡õ                    ¡õ     ========\n"
+             "  ¡õ                    ¡õ\n"
+             "  ¡õ                    ¡õ\n"
+             "  ¡õ                    ¡õ  LINE\n"
+             "  ¡õ                    ¡õ\n"
+             "  ¡õ                    ¡õ  BURN\n"
+             "  ¡õ                    ¡õ\n"
+             "  ¡õ                    ¡õ  LEVEL\n"
+             "  ¡õ                    ¡õ\n"
+             "  ¡õ                    ¡õ  ================\n"
+             "  ¡õ                    ¡õ |[¡ü][X]rotate cw|\n"
+             "  ¡õ                    ¡õ |[Ctrl][Z]rot ccw|\n"
+             "  ¡õ                    ¡õ |[¡û][¡ú]move L/R|\n"
+             "  ¡õ                    ¡õ |[¡ı]NL soft drop|\n"
+             "  ¡õ                    ¡õ |[Sp]L hard drop |\n"
+             "  ¡õ                    ¡õ |                |\n"
+             "  ¡õ                    ¡õ |°´ÈÎÒâ¼ü¿ªÊ¼ÓÎÏ·|\n"
+             "  ¡õ                    ¡õ  ================\n"
+             "  ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ");
 }
 
-void clearImfBar()  //æ¸…ç©ºä¿¡æ¯æ ï¼ˆå³ä¸‹çš„æ¡†æ¡†ï¼‰
+void clearImfBar()
 {
     color(15);
     for(int i = 17;i <= 23;i++)
@@ -372,7 +374,7 @@ void clearImfBar()  //æ¸…ç©ºä¿¡æ¯æ ï¼ˆå³ä¸‹çš„æ¡†æ¡†ï¼‰
     }
 }
 
-void printScore()   //æ‰“å°åˆ†æ•°
+void printScore()
 {
     color(10);
     int a = score;
@@ -385,7 +387,7 @@ void printScore()   //æ‰“å°åˆ†æ•°
     color(15);
 };
 
-void printLine()    //æ‰“å°è¡Œæ•°
+void printLine()
 {
     color(11);
     go(18,10);
@@ -393,7 +395,7 @@ void printLine()    //æ‰“å°è¡Œæ•°
     color(15);
 }
 
-void printBurn()    //æ‰“å°burn
+void printBurn()
 {
     color(11);
     go(18,12);
@@ -401,14 +403,14 @@ void printBurn()    //æ‰“å°burn
     color(15);
 }
 
-void printLevel()   //æ‰“å°å…³å¡æ•°
+void printLevel()
 {
     color(11);
     go(19,14);
     cout << wideNumbers[level / 10] << wideNumbers[level % 10];
     color(15);
 }
-void printBlock(int mode,currentBlock block1)   //æ‰“å°æ–¹å—block1ï¼›mode = 1 æ—¶æ‰“å°æ–¹å—æœ¬ä½“ï¼Œmode = 2 æ—¶æ‰“å° ghost piece
+void printBlock(int mode,currentBlock block1)
 {
     if(mode == 1)
         color(block[block1.type].color.color[0]);
@@ -424,7 +426,7 @@ void printBlock(int mode,currentBlock block1)   //æ‰“å°æ–¹å—block1ï¼›mode = 1 
                 go(j + block1.x + 1,5 + i + block1.y);
                 if(mode)
                 {
-                    printf("â– ");
+                    printf("¡ö");
                 }
                 else
                 {
@@ -434,17 +436,17 @@ void printBlock(int mode,currentBlock block1)   //æ‰“å°æ–¹å—block1ï¼›mode = 1 
     color(15);
 }
 
-bool wallHittingCheck(int x,int y,currentBlock block1)  //  ç¢°æ’æ£€æµ‹
+bool wallHittingCheck(int x,int y,currentBlock block1)
 {
     for(int i = 0;i < 4;i++)
         for(int j = 0;j < 4;j++)
-            if(block[block1.type].matrix[block1.dir].data[i][j] && y + i >= 0)  //å½“å‰æ–¹å—çš„è¿™ä¸ªåœ°æ–¹ä¸ä¸ºç©ºä¸”æ­¤å¤„æ²¡æœ‰è¶…è¿‡ç¬¬20è¡Œ
-                if(ground[x + j][y + i] || x + j < 0 || x + j > 9 || y + i > 19)    //è¿™é‡Œæœ¬æ¥ä¹Ÿæœ‰æ–¹å—æˆ–å½“å‰æ–¹å—è¶Šç•Œäº†
+            if(block[block1.type].matrix[block1.dir].data[i][j] && y + i >= 0)
+                if(ground[x + j][y + i] || x + j < 0 || x + j > 9 || y + i > 19)
                     return true;
     return false;
 }
 
-void getRandomBlocks(bool itIsTheFirstBlock)    //7-bag éšæœºç”Ÿæˆæ–¹å—
+void getRandomBlocks(bool itIsTheFirstBlock)
 {
     for(int i = 0;i < 7;i++)
         nextBlocks[i] = i;
@@ -453,11 +455,11 @@ void getRandomBlocks(bool itIsTheFirstBlock)    //7-bag éšæœºç”Ÿæˆæ–¹å—
     for(int i = 0;i < times;i++)
         swap(nextBlocks[getRand(0,6)],nextBlocks[getRand(0,6)]);
 
-    if(itIsTheFirstBlock && nextBlocks[0] > 1 && nextBlocks[0] <= 3)   //å¦‚æœè¿™æ˜¯ç¬¬ä¸€ç»„æ–¹å—ä¸”ç¬¬ä¸€ä¸ªæ–¹å—ä¸ºSæˆ–Z
+    if(itIsTheFirstBlock && nextBlocks[0] >= 1 && nextBlocks[0] <= 3)
         getRandomBlocks(true);
 }
 
-bool land()     //æ–¹å—ç€é™†åå¤„ç†
+bool land()
 {
     for(int i = 3;i >= 0;i--)
         for(int j = 0;j < 4;j++)
@@ -465,12 +467,12 @@ bool land()     //æ–¹å—ç€é™†åå¤„ç†
             {
                 if(curBlock.y + i < 0)
                     return true;
-                ground[curBlock.x + j][curBlock.y + i] = curBlock.type + 1; //å°†ç±»å‹+1ï¼ˆä¸ºäº†åŒºåˆ†å¼€Iå’Œç©ºä½ï¼‰å‚¨å­˜åˆ°åœ°å›¾ä¸­
+                ground[curBlock.x + j][curBlock.y + i] = curBlock.type + 1;
             }
     return false;
 }
 
-void printTheNextBlock()    //æ‰“å°ä¸‹ä¸€ä¸ªæ–¹å—
+void printTheNextBlock()
 {
     int ki = 0,kj = 0;
     if(block[nextBlocks[nextBlockI]].matrix[0].data[0][0] + block[nextBlocks[nextBlockI]].matrix[0].data[1][0] + block[nextBlocks[nextBlockI]].matrix[0].data[2][0] + block[nextBlocks[nextBlockI]].matrix[0].data[3][0] == 0)
@@ -480,7 +482,7 @@ void printTheNextBlock()    //æ‰“å°ä¸‹ä¸€ä¸ªæ–¹å—
         ki++;
         if(block[nextBlocks[nextBlockI]].matrix[0].data[1][0] + block[nextBlocks[nextBlockI]].matrix[0].data[1][1] + block[nextBlocks[nextBlockI]].matrix[0].data[1][2] + block[nextBlocks[nextBlockI]].matrix[0].data[1][3] == 0)
             ki++;
-    }       //æ‰“å°ä½ç½®çš„å¤„ç†
+    }
 
     color(15);
     for(int i = 0;i < 2;i++)
@@ -488,7 +490,7 @@ void printTheNextBlock()    //æ‰“å°ä¸‹ä¸€ä¸ªæ–¹å—
         {
             go(14.5 + j,5 + i);
             printf("  ");
-        }   //æ¸…ç©ºé¢„è§ˆåŒºåŸŸ
+        }
 
     color(block[nextBlocks[nextBlockI]].color.color[0]);
     for(int i = ki;i < ki + 2;i++)
@@ -496,22 +498,22 @@ void printTheNextBlock()    //æ‰“å°ä¸‹ä¸€ä¸ªæ–¹å—
             if(block[nextBlocks[nextBlockI]].matrix[0].data[i][j])
             {
                 go((nextBlocks[nextBlockI] == 1 ? 15 : 14.5) + j - (kj / 2.0),5 + i - ki);
-                printf("â– ");
-            }   //æ‰“å°
+                printf("¡ö");
+            }
     color(15);
 }
 
-void preview()  //é¢„è§ˆæ–¹å—ä¸‹è½çš„ä½ç½®ï¼ˆghost pieceï¼‰
+void preview()
 {
     if(preBlock.dir != -1)
         printBlock(0,preBlock);
     preBlock = curBlock;
-    while(!wallHittingCheck(preBlock.x,preBlock.y + 1,preBlock))    //ç›´åˆ°ä¸èƒ½å†ä¸‹è½
+    while(!wallHittingCheck(preBlock.x,preBlock.y + 1,preBlock))
         preBlock.y++;
     printBlock(2,preBlock);
 }
 
-void effectivelySpin(long long &lockDelay,int x,int y,bool clockWise) //æœ‰æ•ˆåœ°æ—‹è½¬
+void effectiveSpin(long long &lockDelay,int x,int y,bool clockWise)
 {
     curBlock.dir = (curBlock.dir + (clockWise ? 1 : 3)) % 4;
     curBlock.x += x;
@@ -520,40 +522,40 @@ void effectivelySpin(long long &lockDelay,int x,int y,bool clockWise) //æœ‰æ•ˆåœ
 
     if(lockDelay != -1)
     {
-        lockDelay = GetTickCount(); //é‡ç½®é”å®šå»¶è¿Ÿ
+        lockDelay = GetTickCount();
         while(!wallHittingCheck(curBlock.x,curBlock.y + 1,curBlock))
             curBlock.y++;
     }
 }
 
-void tryToSpin(long long &lockDelay,bool clockWise) //å°è¯•æ—‹è½¬ï¼ŒclockWiseè¡¨ç¤ºæ˜¯å¦ä¸ºé¡ºæ—¶é’ˆ
+void tryToSpin(long long &lockDelay,bool clockWise)
 {
-    currentBlock block1 = curBlock; //ä¸´æ—¶å®šä¹‰ä¸€ä¸ªæ—‹è½¬åçš„æ–¹å—
+    currentBlock block1 = curBlock;
     block1.dir = (block1.dir + ( clockWise ? 1 : 3)) % 4;
-    if(!wallHittingCheck(block1.x,block1.y,block1)) //è‹¥æ—‹è½¬åæ²¡æœ‰ç¢°æ’ï¼Œåˆ™æ—‹è½¬
+    if(!wallHittingCheck(block1.x,block1.y,block1))
     {
-        effectivelySpin(lockDelay,0,0,clockWise);
+        effectiveSpin(lockDelay,0,0,clockWise);
     }
-    else    //å¦åˆ™ä½¿ç”¨SRSé€ä¸ªå°è¯•å…¶å®ƒå¤‡é€‰ä½ç½®
+    else
     {
-        if(block1.type != 0)    //è‹¥å½“å‰æ–¹å—ä¸æ˜¯Iï¼Œä½¿ç”¨ä¸€èˆ¬çš„wallkickæ•°æ®
+        if(block1.type != 0)
         {
             for(int i = 0;i < 4;i++)
             {
                 if(!wallHittingCheck(block1.x + wallKickData[curBlock.dir][!clockWise][i][0],block1.y + wallKickData[curBlock.dir][!clockWise][i][1],block1))
                 {
-                    effectivelySpin(lockDelay,wallKickData[curBlock.dir][!clockWise][i][0],wallKickData[curBlock.dir][!clockWise][i][1],clockWise);
+                    effectiveSpin(lockDelay,wallKickData[curBlock.dir][!clockWise][i][0],wallKickData[curBlock.dir][!clockWise][i][1],clockWise);
                     break;
                 }
             }
         }
-        else                    //å¦åˆ™ä½¿ç”¨Iå—çš„wallkickæ•°æ®
+        else
         {
             for(int i = 0;i < 4;i++)
             {
                 if(!wallHittingCheck(block1.x + wallKickDataOfI[curBlock.dir][!clockWise][i][0],block1.y + wallKickDataOfI[curBlock.dir][!clockWise][i][1],block1))
                 {
-                    effectivelySpin(lockDelay,wallKickDataOfI[curBlock.dir][!clockWise][i][0],wallKickDataOfI[curBlock.dir][!clockWise][i][1],clockWise);
+                    effectiveSpin(lockDelay,wallKickDataOfI[curBlock.dir][!clockWise][i][0],wallKickDataOfI[curBlock.dir][!clockWise][i][1],clockWise);
                     break;
                 }
             }
@@ -561,13 +563,13 @@ void tryToSpin(long long &lockDelay,bool clockWise) //å°è¯•æ—‹è½¬ï¼ŒclockWiseè¡
     }
 }
 
-void lineCheck(int y)   //æ¶ˆè¡Œæ£€æµ‹
+void lineCheck(int y)
 {
-    short linesN = 0;   //è¢«æ¶ˆçš„è¡Œæ•°
-    vector <int>lines;  //è¢«æ¶ˆçš„è¡Œä»¬
-    for(int i = y;i <= min(19,y + 3);i++)   //åœ¨æœ‰å˜åŠ¨çš„è¡Œä¸­æ£€æµ‹ï¼Œè¶…å‡ºå±å¹•çš„è¡Œä¸æ£€æµ‹
+    short linesN = 0;
+    vector <int>lines;
+    for(int i = y;i <= min(19,y + 3);i++)
     {
-        bool flag = true;   //æ¯æ ¼æ˜¯å¦éƒ½ä¸ä¸ºç©º
+        bool flag = true;
         for(int j = 0;j < 10;j++)
             if(ground[j][i] == 0)
                 flag = false;
@@ -577,7 +579,7 @@ void lineCheck(int y)   //æ¶ˆè¡Œæ£€æµ‹
             lines.push_back(i);
         }
     }
-    if(!linesN) //æ²¡æœ‰æ¶ˆè¡Œåˆ™ç»“æŸå‡½æ•°
+    if(!linesN)
         return;
 
     color(15);
@@ -587,7 +589,7 @@ void lineCheck(int y)   //æ¶ˆè¡Œæ£€æµ‹
     go(14.5,20);
     cout << nameOfLines[linesN - 1];
 
-    for(int j = 0;j < 5;j++)    //æ¶ˆè¡ŒåŠ¨ç”»
+    for(int j = 0;j < 5;j++)
     {
         for(auto i = lines.begin();i < lines.end();i++)
         {
@@ -599,7 +601,7 @@ void lineCheck(int y)   //æ¶ˆè¡Œæ£€æµ‹
         Sleep(100);
     }
 
-    for(auto k = lines.begin();k < lines.end();k++) //å°†è¢«æ¶ˆè¡Œä¸Šæ–¹çš„è¡Œç§»ä¸‹æ¥
+    for(auto k = lines.begin();k < lines.end();k++)
     {
         for(int i = *k;i >= 0;i--)
             for(int j = 0;j < 10;j++)
@@ -609,25 +611,6 @@ void lineCheck(int y)   //æ¶ˆè¡Œæ£€æµ‹
                     ground[j][i] = 0;
     }
 
-    for(int i = 0;i < min(y + 4,20);i++)    //æ›´æ–°å±å¹•
-    {
-        for(int j = 0;j < 10;j++)
-        {
-            go(j + 1,i + 5);
-            if(ground[j][i])
-            {
-                color(block[ground[j][i] - 1].color.color[0]);
-                printf("â– ");
-            }
-            else
-            {
-                color(15);
-                printf("  ");
-            }
-        }
-    }
-    color(15);
-
     if(linesN < 4)
     {
         burn += linesN;
@@ -635,7 +618,7 @@ void lineCheck(int y)   //æ¶ˆè¡Œæ£€æµ‹
     }
     line += linesN;
     printLine();
-    switch (linesN) //å¾—åˆ†
+    switch (linesN)
     {
         case 1:
             score += 40 * (level + 1);
@@ -651,37 +634,56 @@ void lineCheck(int y)   //æ¶ˆè¡Œæ£€æµ‹
             break;
     }
 
+    for(int i = 0;i < min(y + 4,20);i++)
+    {
+        for(int j = 0;j < 10;j++)
+        {
+            go(j + 1,i + 5);
+            if(ground[j][i])
+            {
+                color(block[ground[j][i] - 1].color.color[0]);
+                printf("¡ö");
+            }
+            else
+            {
+                color(15);
+                printf("  ");
+            }
+        }
+    }
+    color(15);
+
     printScore();
 
-    int l = line,i = 0;     //è®¡ç®—ç­‰çº§
+    int l = line,i = 0;
     while(l > linesForLevels[i])
         l -= linesForLevels[i++];
     level = i;
     printLevel();
 
     go(14.5,20);
-    printf("æ¸¸æˆè¿›è¡Œä¸­");
+    printf("ÓÎÏ·½øĞĞÖĞ");
 }
 
 int main();
 
-void gaming()   //æ¸¸æˆå‡½æ•°
+void gaming()
 {
-    SetConsoleTitle("ä¿„ç½—æ–¯æ–¹å—ï¼ˆ Esc/F1/Enteræš‚åœæ¸¸æˆ ï¼‰");
+    SetConsoleTitle("¶íÂŞË¹·½¿é£¨ Esc/F1/EnterÔİÍ£ÓÎÏ· £©");
     while(!kbhit())
         Sleep(100);
-    int i = getch();    //æŒ‰ä¸‹ä»»æ„é”®å¼€å§‹
+    int i = getch();
 
     clearImfBar();
 
     go(14.5,20);
-    printf("æ¸¸æˆè¿›è¡Œä¸­");
+    printf("ÓÎÏ·½øĞĞÖĞ");
 
     nextBlockI = 0;
     getRandomBlocks(true);
-    while(score != -1)  //å®é™…ä¸Šæ˜¯æ­»å¾ªç¯ï¼Œscoreä¸ä¸º1åªæ˜¯ä¸ºäº†è®©æˆ‘çš„ç¼–è¯‘å™¨æ²¡æœ‰è­¦å‘Šè€Œå·²
+    while(score != -1)
     {
-        bool speedUp = false;   //æ˜¯å¦åŠ é€Ÿ
+        bool speedUp = false;
 
         curBlock.type = nextBlocks[nextBlockI];
         nextBlockI++;
@@ -706,13 +708,13 @@ void gaming()   //æ¸¸æˆå‡½æ•°
 
         preview();
 
-        long long lockDelay = -1;   //ç”¨äºè®¡ç®—é”å®šå»¶è¿Ÿï¼Œ-1è¡¨ç¤ºæœªè½åœ°
-        while(lockDelay == -1 || GetTickCount() - lockDelay < 500)  //æœªè½åœ°æˆ–é”å®šå»¶è¿Ÿæœªè¿‡å®Œï¼ˆ500msï¼‰æ—¶
+        long long lockDelay = -1;
+        while(lockDelay == -1 || GetTickCount() - lockDelay < 500)
         {
             if(lockDelay == -1)
                 curBlock.y++;
             printBlock(1,curBlock);
-            if(speedUp) //è‹¥åŠ é€Ÿ
+            if(speedUp)
             {
                 speedUp = false;
                 Sleep(speed[level] / 4);
@@ -724,18 +726,18 @@ void gaming()   //æ¸¸æˆå‡½æ•°
             if(kbhit())
             {
                 int key = getch();
-                if(key == 224)  //æ–¹å‘é”®è¯»å–ï¼ˆä¼šè¯»å…¥ä¸¤ä¸ªæ•°å­—ï¼Œç¬¬ä¸€ä¸ªæ˜¯224ï¼‰
+                if(key == 224)
                 {
                     key = getch();
                     switch (key)
                     {
-                        case 72:    //ä¸Š
+                        case 72:
                             tryToSpin(lockDelay,true);
                             break;
-                        case 80:    //ä¸‹
+                        case 80:
                             speedUp = true;
                             break;
-                        case 75:    //å·¦
+                        case 75:
                             if(!wallHittingCheck(curBlock.x - 1,curBlock.y,curBlock))
                             {
                                 curBlock.x--;
@@ -744,7 +746,7 @@ void gaming()   //æ¸¸æˆå‡½æ•°
                                     lockDelay = GetTickCount();
                             }
                             break;
-                        case 77:    //å³
+                        case 77:
                             if(!wallHittingCheck(curBlock.x + 1,curBlock.y,curBlock))
                             {
                                 curBlock.x++;
@@ -756,15 +758,15 @@ void gaming()   //æ¸¸æˆå‡½æ•°
                     }
                 }
                 else if(key == 'X' || key == 'x')
-                    tryToSpin(lockDelay,true);  //é¡ºæ—¶é’ˆæ—‹è½¬
+                    tryToSpin(lockDelay,true);
                 else if(key == 'Z' || key == 'z')
-                    tryToSpin(lockDelay,false); //é€†æ—¶é’ˆæ—‹è½¬
-                else if(key == 27 || key == 0 || key == 13 || key == 59)    //æš‚åœ
+                    tryToSpin(lockDelay,false);
+                else if(key == 27 || key == 0 || key == 13 || key == 59)
                 {
-                    SetConsoleTitle("æš‚åœä¸­â€¦â€¦");
+                    SetConsoleTitle("ÔİÍ£ÖĞ¡­¡­");
 
                     go(14.5,20);
-                    printf("æš‚åœä¸­â€¦â€¦");
+                    printf("ÔİÍ£ÖĞ¡­¡­");
 
                     printBlock(1,curBlock);
                     while(kbhit())
@@ -772,40 +774,40 @@ void gaming()   //æ¸¸æˆå‡½æ•°
                     while(!getch())
                         Sleep(100);
 
-                    SetConsoleTitle("äºŒ â€¦â€¦");
+                    SetConsoleTitle("¶ş ¡­¡­");
                     go(14.5,20);
-                    printf("    äºŒ    ");
+                    printf("    ¶ş    ");
                     Sleep(1000);
 
-                    SetConsoleTitle("ä¸€ â€¦â€¦â€¦â€¦â€¦â€¦â€¦â€¦");
+                    SetConsoleTitle("Ò» ¡­¡­¡­¡­¡­¡­¡­¡­");
                     go(14.5,20);
-                    printf("    ä¸€    ");
+                    printf("    Ò»    ");
                     Sleep(1000);
 
-                    SetConsoleTitle("ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ æ¸¸æˆç»§ç»­ ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“ã€“");
+                    SetConsoleTitle("¡ş¡ş¡ş¡ş¡ş¡ş¡ş¡ş¡ş¡ş ÓÎÏ·¼ÌĞø ¡ş¡ş¡ş¡ş¡ş¡ş¡ş¡ş¡ş¡ş");
                     go(14.5,20);
-                    printf("æ¸¸æˆç»§ç»­ï¼");
+                    printf("ÓÎÏ·¼ÌĞø£¡");
                     Sleep(1000);
 
                     go(14.5,20);
-                    printf("æ¸¸æˆè¿›è¡Œä¸­");
-                    SetConsoleTitle("ä¿„ç½—æ–¯æ–¹å—ï¼ˆ Esc/F1/Enteræš‚åœæ¸¸æˆ ï¼‰");
+                    printf("ÓÎÏ·½øĞĞÖĞ");
+                    SetConsoleTitle("¶íÂŞË¹·½¿é£¨ Esc/F1/EnterÔİÍ£ÓÎÏ· £©");
 
                     lockDelay = GetTickCount();
 
                     printBlock(0,curBlock);
                 }
-                else if(key == 32)  //ç¡¬é™
+                else if(key == 32)
                 {
                     curBlock = preBlock;
                     break;
                 }
             }
-            if(GetKeyState(VK_CONTROL) < 0) //Ctrlé€†æ—¶é’ˆæ—‹è½¬
+            if(GetKeyState(VK_CONTROL) < 0)
             {
                 tryToSpin(lockDelay,false);
             }
-            if(wallHittingCheck(curBlock.x,curBlock.y + 1,curBlock))    //è‹¥è½åœ°ï¼Œå¼€å§‹è®¡ç®—é”å®šå»¶è¿Ÿ
+            if(wallHittingCheck(curBlock.x,curBlock.y + 1,curBlock))
             {
                 if(lockDelay == -1)
                     lockDelay = GetTickCount();
@@ -813,25 +815,26 @@ void gaming()   //æ¸¸æˆå‡½æ•°
             else
                 lockDelay = -1;
         }
+        printf("\a");
         printBlock(1,curBlock);
         preBlock.dir = -1;
         if(land())
             break;
         lineCheck(curBlock.y);
     }
-    SetConsoleTitle("æ¸¸æˆç»“æŸ,Escé€€å‡º");  //æ¸¸æˆç»“æŸ
+    SetConsoleTitle("ÓÎÏ·½áÊø,EscÍË³ö");
     go(14.5,20);
     printf("          ");
     go(15,17);
-    printf("æ¸¸æˆç»“æŸ");
+    printf("ÓÎÏ·½áÊø");
     go(13.5,19);
-    printf("å¾—åˆ†ï¼š%d",score);
+    printf("µÃ·Ö£º%d",score);
 
     ifstream infile("Highest.dat",ios::in);
     if(!infile)
     {
         go(13,19);
-        printf("è¯»å–æœ€é«˜è®°å½•å¤±è´¥");
+        printf("¶ÁÈ¡×î¸ß¼ÇÂ¼Ê§°Ü");
     }
     int highest = -1;
     infile >> highest;
@@ -843,19 +846,19 @@ void gaming()   //æ¸¸æˆå‡½æ•°
         if(!outfile)
         {
             go(13,20);
-            cerr << "ä¿å­˜æœ€é«˜è®°å½•å¤±è´¥" << endl;
+            cerr << "±£´æ×î¸ß¼ÇÂ¼Ê§°Ü" << endl;
         }
         outfile << score;
         highest = score;
     }
 
     go(13.5,21);
-    printf("æœ€é«˜ï¼š%d",highest);
+    printf("×î¸ß£º%d",highest);
     if(highest == score)
-        printf("(å½“å‰)");
+        printf("(µ±Ç°)");
 
     go(13,23);
-    printf("Enterè¿›å…¥æ–°æ¸¸æˆ");
+    printf("Enter½øÈëĞÂÓÎÏ·");
 
     int key = getch();
     while(key != 27 && key != 0 && key != 59)
@@ -867,6 +870,7 @@ void gaming()   //æ¸¸æˆå‡½æ•°
         }
         key = getch();
     }
+
 }
 
 int main()
