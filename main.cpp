@@ -815,7 +815,6 @@ void gaming()
             else
                 lockDelay = -1;
         }
-        printf("\a");
         printBlock(1,curBlock);
         preBlock.dir = -1;
         if(land())
